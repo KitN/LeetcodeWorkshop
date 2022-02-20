@@ -1,16 +1,52 @@
 from typing import *
 from binarytree import tree, Node
-import pudb; pu.db
+#import pudb; pu.db
 
 class Solution:
     def buildTree(self, inorder: List[int], postorder: List[int])-> Optional[Node]:
         if postorder == []:
             return None
-        candidates = self.postPoss(postorder)
-        for can in candidates:
-            io = self.inorderTraversal(can)
-            if io == inorder:
-                return can
+        if len(postorder) == 1: # We have a leaf
+            return Node(postorder[0])
+        tailval = postorder[-1]
+        rootnode = Node(tailval)
+        keystone = inorder.index(tailval) # The index of tailval in the inorder
+        leftwing = inorder[:keystone]
+        rightwing = inorder[keystone+1:]
+        # Find the corresponding slices of the postorder sequence
+        leftwide = len(leftwing)
+        rightwide = len(rightwing)
+        lcomp = postorder[:leftwide]
+        rcomp = postorder[leftwide:-1]
+        # Recursively call the function to make the left and right subtrees.
+        lsubtree = self.buildTree(leftwing, lcomp)
+        rsubtree = self.buildTree(rightwing, rcomp)
+        rootnode.left = lsubtree
+        rootnode.right = rsubtree
+        return(rootnode)
+
+    def buildTreePre(self, preorder: List[int], inorder: List[int])-> Optional[Node]:
+        if preorder == []:
+            return None
+        if len(preorder) == 1: # We have a leaf
+            return Node(preorder[0])
+        mouthval = preorder[0]
+        rootnode = Node(mouthval)
+        keystone = inorder.index(mouthval) # The index of mouthval in the inorder
+        leftwing = inorder[:keystone]
+        rightwing = inorder[keystone+1:]
+        # Find the corresponding slices of the postorder sequence
+        leftwide = len(leftwing)
+        rightwide = len(rightwing)
+        remaind = preorder[1:]
+        lcomp = remaind[:leftwide]
+        rcomp = remaind[leftwide:]
+        # Recursively call the function to make the left and right subtrees.
+        lsubtree = self.buildTreePre(lcomp, leftwing)
+        rsubtree = self.buildTreePre(rcomp, rightwing)
+        rootnode.left = lsubtree
+        rootnode.right = rsubtree
+        return(rootnode)
 
 
     def postPoss(self, postorder: List[int]) -> List[Node]:
@@ -58,6 +94,7 @@ fourvals = [3,5,7,11]
 
 inorder = [9,3,15,20,7]
 postorder = [9,15,7,20,3]
+preorder = [3, 9, 20, 15, 7]
 
-answer = s.buildTree(inorder, postorder)
+answer = s.buildTreePre(preorder, inorder)
 print(answer)

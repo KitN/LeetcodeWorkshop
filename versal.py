@@ -36,7 +36,6 @@ class Solution:
         q = queue.Queue()
         q.put((root, 0))
         height = 0
-        count = 0
         while not q.empty():
             eye = q.get()
             height = eye[1]
